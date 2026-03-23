@@ -106,32 +106,6 @@ export default function SetupScreen({
           />
         </div>
 
-        {/* Interview Type */}
-        <div>
-          <label className="text-[#8B92B8] text-xs font-medium uppercase tracking-widest mb-2 block">
-            Interview Type
-          </label>
-          <div className="flex gap-2">
-            <button
-              className="px-4 py-2 rounded-full text-sm font-medium bg-[#6C63FF] text-white cursor-default"
-              aria-pressed="true"
-            >
-              Behavioural
-            </button>
-            <button
-              disabled
-              className="px-4 py-2 rounded-full text-sm font-medium bg-[#1E2235] text-[#8B92B8] opacity-40 cursor-not-allowed"
-            >
-              Technical
-            </button>
-            <button
-              disabled
-              className="px-4 py-2 rounded-full text-sm font-medium bg-[#1E2235] text-[#8B92B8] opacity-40 cursor-not-allowed"
-            >
-              Mixed
-            </button>
-          </div>
-        </div>
 
         {/* Resume Upload */}
         <div>
