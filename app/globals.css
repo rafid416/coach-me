@@ -33,28 +33,3 @@ body {
   font-family: var(--font-inter), system-ui, sans-serif;
 }
 
-/* Orb animations */
-@keyframes orb-breathe {
-  0%, 100% {
-    transform: scale(1.0);
-    box-shadow: 0 0 30px 6px rgba(108, 99, 255, 0.35);
-  }
-  50% {
-    transform: scale(1.04);
-    box-shadow: 0 0 40px 10px rgba(108, 99, 255, 0.5);
-  }
-}
-
-@keyframes orb-listen {
-  0%, 100% { transform: scale(1.0); }
-  50%       { transform: scale(1.05); }
-}
-
-@keyframes orb-think {
-  0%   { filter: hue-rotate(0deg); }
-  100% { filter: hue-rotate(30deg); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .orb { animation: none !important; }
-}
