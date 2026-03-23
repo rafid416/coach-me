@@ -29,7 +29,7 @@ export default function ScoreBar({ label, score, index }: ScoreBarProps) {
 
   return (
     <div className="flex items-center gap-3">
-      <span className="text-[#8B92B8] text-sm w-28 flex-shrink-0">{label}</span>
+      <span className="text-[#8B92B8] text-xs sm:text-sm w-24 sm:w-28 flex-shrink-0">{label}</span>
       <div className="flex-1 bg-[#1E2235] rounded-full h-2 overflow-hidden">
         <div
           className="h-full rounded-full"
@@ -40,7 +40,7 @@ export default function ScoreBar({ label, score, index }: ScoreBarProps) {
           }}
         />
       </div>
-      <span className="text-[#F0F2FF] text-sm w-10 text-right flex-shrink-0">
+      <span className="text-[#F0F2FF] text-xs sm:text-sm w-8 sm:w-10 text-right flex-shrink-0">
         {score}/10
       </span>
     </div>

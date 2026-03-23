@@ -123,7 +123,7 @@ export default function FeedbackScreen({
       </div>
 
       {/* Feedback card */}
-      <div className="w-full bg-[#161926] rounded-2xl border border-white/[0.06] p-5 space-y-4">
+      <div className="w-full bg-[#161926] rounded-2xl border border-white/[0.06] p-4 sm:p-5 space-y-4">
         <h2 className="text-[#F0F2FF] font-semibold">Feedback</h2>
 
         {loading ? (

@@ -32,13 +32,13 @@ export default function SpeakingScreen({
   }, [question]);
 
   return (
-    <div className="flex flex-col items-center w-full max-w-[560px] px-4 gap-8">
+    <div className="flex flex-col items-center w-full max-w-[560px] px-4 gap-6 sm:gap-8">
       <ProgressBar current={questionIndex + 1} total={total} />
 
       <Orb state="speaking" size="lg" />
 
       <div className="text-center max-w-[480px]">
-        <p className="text-[#F0F2FF] text-xl font-medium leading-relaxed">
+        <p className="text-[#F0F2FF] text-lg sm:text-xl font-medium leading-relaxed">
           {question}
         </p>
       </div>

@@ -183,7 +183,7 @@ export default function Home() {
 
   // ── State machine render ────────────────────────────────────────────────────
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-4 py-12">
+    <main className="min-h-screen flex flex-col items-center justify-center py-8 sm:py-12">
       {/* aria-live region for screen readers — task 9.4 */}
       <div ref={announceRef} aria-live="polite" aria-atomic="true" className="sr-only" />
 
@@ -195,7 +195,7 @@ export default function Home() {
       )}
 
       {appState === 'gate' && (
-        <div className="text-center max-w-md">
+        <div className="text-center max-w-md px-6">
           <h1 className="text-2xl font-semibold text-[#F0F2FF] mb-3">CoachMe works best in Chrome or Edge</h1>
           <p className="text-[#8B92B8] mb-6 text-sm">Voice features require the Web Speech API, supported in Chrome and Edge.</p>
           <button

@@ -86,9 +86,9 @@ export default function SetupScreen({
       </div>
 
       {/* Card */}
-      <div className="w-full bg-[#161926] rounded-2xl border border-white/[0.06] p-6 space-y-5">
+      <div className="w-full bg-[#161926] rounded-2xl border border-white/[0.06] p-4 sm:p-6 space-y-4 sm:space-y-5">
         <div>
-          <h1 className="text-[#F0F2FF] text-xl font-semibold">Set up your interview</h1>
+          <h1 className="text-[#F0F2FF] text-lg sm:text-xl font-semibold">Set up your interview</h1>
           <p className="text-[#8B92B8] text-sm mt-1">Tell us what you&apos;re practicing for</p>
         </div>
 

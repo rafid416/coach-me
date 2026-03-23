@@ -107,23 +107,23 @@ export default function SummaryScreen({ questions, answers, onRestart }: Summary
       {/* Overall score */}
       <div className="text-center">
         <div className="flex items-end justify-center gap-1">
-          <span className="text-[#6C63FF] font-bold leading-none" style={{ fontSize: 72 }}>
+          <span className="text-[#6C63FF] font-bold leading-none text-6xl sm:text-7xl">
             {overall}
           </span>
-          <span className="text-[#8B92B8] text-2xl mb-3">/100</span>
+          <span className="text-[#8B92B8] text-xl sm:text-2xl mb-2 sm:mb-3">/100</span>
         </div>
         <p className="text-[#8B92B8] text-sm">Overall Score</p>
       </div>
 
       {/* Verdict card */}
       {loading ? (
-        <div className="w-full bg-[#161926] rounded-2xl border border-white/[0.06] p-5 flex items-center gap-3">
+        <div className="w-full bg-[#161926] rounded-2xl border border-white/[0.06] p-4 sm:p-5 flex items-center gap-3">
           <div className="w-4 h-4 border-2 border-[#6C63FF] border-t-transparent rounded-full animate-spin flex-shrink-0" />
           <span className="text-[#8B92B8] text-sm">Generating your verdict...</span>
         </div>
       ) : verdictData && (
         <div
-          className="w-full bg-[#161926] rounded-2xl border border-white/[0.06] p-5 border-l-4"
+          className="w-full bg-[#161926] rounded-2xl border border-white/[0.06] p-4 sm:p-5 border-l-4"
           style={{ borderLeftColor: verdictColor }}
         >
           <h2 className="text-[#F0F2FF] font-semibold text-lg mb-2">{verdictData.verdict}</h2>
@@ -132,7 +132,7 @@ export default function SummaryScreen({ questions, answers, onRestart }: Summary
       )}
 
       {/* Averaged score bars */}
-      <div className="w-full bg-[#161926] rounded-2xl border border-white/[0.06] p-5 space-y-3">
+      <div className="w-full bg-[#161926] rounded-2xl border border-white/[0.06] p-4 sm:p-5 space-y-3">
         <h3 className="text-[#F0F2FF] font-semibold text-sm">Session Average</h3>
         {avgScores.map(({ key, avg }, i) => (
           <ScoreBar key={key} label={SCORE_LABELS[key]} score={avg} index={i} />
@@ -141,7 +141,7 @@ export default function SummaryScreen({ questions, answers, onRestart }: Summary
 
       {/* Improvement tips */}
       {verdictData?.tips && verdictData.tips.length > 0 && (
-        <div className="w-full bg-[#161926] rounded-2xl border border-white/[0.06] p-5">
+        <div className="w-full bg-[#161926] rounded-2xl border border-white/[0.06] p-4 sm:p-5">
           <h3 className="text-[#F0F2FF] font-semibold text-sm mb-3">Focus on these next time</h3>
           <ul className="space-y-2">
             {verdictData.tips.map((tip, i) => (
@@ -155,7 +155,7 @@ export default function SummaryScreen({ questions, answers, onRestart }: Summary
       )}
 
       {/* Buttons */}
-      <div className="w-full flex gap-3">
+      <div className="w-full flex flex-col-reverse sm:flex-row gap-3">
         <button className="flex-1 py-3 rounded-xl border border-white/10 text-[#8B92B8] text-sm hover:border-white/20 hover:text-[#F0F2FF] transition-colors">
           Try Again Tomorrow
         </button>
