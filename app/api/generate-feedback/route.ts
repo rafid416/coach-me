@@ -1,39 +1,36 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import Groq from 'groq';
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
+// Delimiter separating the JSON scores line from the streamed feedback text
+const DELIMITER = '---';
+
 export async function POST(req: NextRequest) {
   const { question, answer, fillerCount } = await req.json();
 
-  const completion = await groq.chat.completions.create({
+  const stream = await groq.chat.completions.create({
     model: 'llama-3.3-70b-versatile',
-    response_format: { type: 'json_object' },
+    stream: true,
     messages: [
       {
         role: 'system',
-        content: `You are an expert interview coach evaluating a candidate's answer to a behavioural interview question.
+        content: `You are an expert interview coach evaluating a candidate's behavioural interview answer.
 
-Score the answer across 4 dimensions (each 0-10):
-- clarity: How clearly and concisely did they communicate their point?
-- relevance: How well did the answer address the specific question asked?
-- star: How well did they follow the STAR format (Situation, Task, Action, Result)?
-- fillerWords: Based on the filler word count provided, score accordingly. 0 fillers = 10, 1-2 = 8, 3-5 = 6, 6-9 = 4, 10+ = 2.
+Respond in exactly two parts:
 
-The candidate used ${fillerCount} filler word(s) in their answer.
+PART 1 — Output a single JSON object on one line with no extra whitespace:
+{"clarity":<0-10>,"relevance":<0-10>,"star":<0-10>,"fillerWords":<0-10>}
 
-Also provide 2-4 sentences of specific, actionable written feedback explaining the scores and what they could improve.
+PART 2 — Output the delimiter ${DELIMITER} on its own line, then 2–4 sentences of specific, actionable plain-text feedback.
 
-Return a JSON object in this exact format:
-{
-  "scores": {
-    "clarity": <number 0-10>,
-    "relevance": <number 0-10>,
-    "star": <number 0-10>,
-    "fillerWords": <number 0-10>
-  },
-  "feedback": "<2-4 sentences of actionable feedback>"
-}`,
+Scoring guide:
+- clarity: How clearly and concisely they communicated
+- relevance: How well the answer addressed the specific question
+- star: How well they structured using STAR (Situation, Task, Action, Result)
+- fillerWords: ${fillerCount} filler words used — 0 fillers=10, 1–2=8, 3–5=6, 6–9=4, 10+=2
+
+Output nothing else. No preamble before the JSON.`,
       },
       {
         role: 'user',
@@ -42,13 +39,66 @@ Return a JSON object in this exact format:
     ],
   });
 
-  const content = completion.choices[0]?.message?.content ?? '{}';
+  const encoder = new TextEncoder();
+  const readable = new ReadableStream({
+    async start(controller) {
+      let buffer = '';
+      let scoresEmitted = false;
 
-  try {
-    const parsed = JSON.parse(content);
-    return NextResponse.json(parsed);
-  } catch {
-    console.error('[generate-feedback] Failed to parse JSON:', content);
-    return NextResponse.json({ error: 'Invalid response from model' }, { status: 500 });
-  }
+      try {
+        for await (const chunk of stream) {
+          const text = chunk.choices[0]?.delta?.content ?? '';
+          if (!text) continue;
+          buffer += text;
+
+          if (!scoresEmitted) {
+            const delimIdx = buffer.indexOf(DELIMITER);
+            if (delimIdx !== -1) {
+              // Parse scores from everything before the delimiter
+              const scoresPart = buffer.slice(0, delimIdx).trim();
+              try {
+                const scores = JSON.parse(scoresPart);
+                controller.enqueue(encoder.encode(JSON.stringify(scores) + '\n'));
+              } catch {
+                console.error('[generate-feedback] Failed to parse scores:', scoresPart);
+                controller.enqueue(
+                  encoder.encode(JSON.stringify({ clarity: 5, relevance: 5, star: 5, fillerWords: 5 }) + '\n')
+                );
+              }
+              scoresEmitted = true;
+              // Emit any feedback text already buffered after the delimiter
+              const afterDelim = buffer.slice(delimIdx + DELIMITER.length).replace(/^\n/, '');
+              if (afterDelim) controller.enqueue(encoder.encode(afterDelim));
+              buffer = '';
+            }
+          } else {
+            controller.enqueue(encoder.encode(text));
+            buffer = '';
+          }
+        }
+
+        // Fallback: delimiter never appeared — try parsing entire buffer as old JSON format
+        if (!scoresEmitted && buffer) {
+          try {
+            const parsed = JSON.parse(buffer.trim());
+            const scores = parsed.scores ?? parsed;
+            controller.enqueue(encoder.encode(JSON.stringify(scores) + '\n'));
+            if (parsed.feedback) controller.enqueue(encoder.encode(parsed.feedback));
+          } catch {
+            controller.enqueue(
+              encoder.encode(JSON.stringify({ clarity: 5, relevance: 5, star: 5, fillerWords: 5 }) + '\n')
+            );
+          }
+        }
+      } catch (err) {
+        console.error('[generate-feedback] Stream error:', err);
+      } finally {
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(readable, {
+    headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+  });
 }

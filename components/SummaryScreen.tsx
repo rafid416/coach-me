@@ -96,7 +96,7 @@ export default function SummaryScreen({ questions, answers, onRestart }: Summary
     }
 
     fetchVerdict();
-  }, [questions, answers, overall]);
+  }, [questions, answers]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const verdictColor = verdictData ? getVerdictColor(verdictData.verdict) : '#6C63FF';
 

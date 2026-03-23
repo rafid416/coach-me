@@ -49,11 +49,6 @@ function formatResetTime(isoString: string): string {
 
 export default function Home() {
   const [appState, setAppState] = useState<AppState>('setup');
-  const [sessionConfig, setSessionConfig] = useState<SessionConfig>({
-    role: '',
-    interviewType: 'behavioural',
-    resumeSummary: '',
-  });
   const [questions, setQuestions] = useState<string[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Answer[]>([]);
@@ -109,7 +104,6 @@ export default function Home() {
     }
 
     setRateLimitResetAt(null);
-    setSessionConfig(config);
     setAppState('generating');
 
     try {
@@ -185,7 +179,6 @@ export default function Home() {
     setAnswers([]);
     setError(null);
     setRateLimitResetAt(null);
-    setSessionConfig({ role: '', interviewType: 'behavioural', resumeSummary: '' });
   }
 
   // ── State machine render ────────────────────────────────────────────────────

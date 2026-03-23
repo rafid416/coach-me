@@ -53,9 +53,39 @@ export default function FeedbackScreen({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ question, answer: transcript, fillerCount }),
         });
-        const data = await res.json();
-        setScores(data.scores ?? null);
-        setFeedbackText(data.feedback ?? '');
+
+        if (!res.body) throw new Error('No response body');
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let scoresSet = false;
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+          buffer += chunk;
+
+          if (!scoresSet) {
+            // Scores arrive as the first newline-terminated JSON line
+            const newlineIdx = buffer.indexOf('\n');
+            if (newlineIdx !== -1) {
+              try {
+                const scores = JSON.parse(buffer.slice(0, newlineIdx));
+                setScores(scores);
+                setLoading(false);
+              } catch { /* scores line malformed — keep loading */ }
+              scoresSet = true;
+              setFeedbackText(buffer.slice(newlineIdx + 1));
+              buffer = '';
+            }
+          } else {
+            setFeedbackText((prev) => prev + chunk);
+            buffer = '';
+          }
+        }
       } catch {
         setScores(null);
         setFeedbackText('Could not load feedback. Please continue.');
