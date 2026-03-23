@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { countFillerWords } from '@/lib/fillerWords';
 import SetupScreen from '@/components/SetupScreen';
+import SpeakingScreen from '@/components/SpeakingScreen';
+import AnsweringScreen from '@/components/AnsweringScreen';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -207,7 +209,7 @@ export default function Home() {
       )}
 
       {appState === 'speaking' && (
-        <SpeakingPlaceholder
+        <SpeakingScreen
           question={questions[currentQuestionIndex]}
           questionIndex={currentQuestionIndex}
           total={questions.length}
@@ -216,7 +218,7 @@ export default function Home() {
       )}
 
       {appState === 'answering' && (
-        <AnsweringPlaceholder
+        <AnsweringScreen
           question={questions[currentQuestionIndex]}
           questionIndex={currentQuestionIndex}
           total={questions.length}
