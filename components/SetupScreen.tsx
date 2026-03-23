@@ -119,8 +119,8 @@ export default function SetupScreen({
               className="w-full border border-dashed border-white/20 rounded-xl px-4 py-5 flex flex-col items-center gap-2 hover:border-[#6C63FF]/50 hover:bg-[#6C63FF]/5 transition-colors"
             >
               <Upload size={20} className="text-[#8B92B8]" />
-              <span className="text-[#8B92B8] text-sm">Upload your resume (PDF)</span>
-              <span className="text-[#8B92B8]/60 text-xs">Helps tailor questions to your experience</span>
+              <span className="text-[#8B92B8] text-sm">Upload your resume</span>
+              <span className="text-[#8B92B8]/60 text-xs">PDF, DOCX, or TXT — helps tailor questions to your experience</span>
             </button>
           ) : (
             <div className="w-full bg-[#1E2235] border border-white/10 rounded-xl px-4 py-3 flex items-center gap-3">
@@ -150,7 +150,7 @@ export default function SetupScreen({
           <input
             ref={fileInputRef}
             type="file"
-            accept=".pdf"
+            accept=".pdf,.docx,.txt"
             className="hidden"
             onChange={(e) => {
               const file = e.target.files?.[0];

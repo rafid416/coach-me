@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pdfParse from 'pdf-parse';
+import mammoth from 'mammoth';
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,11 +12,23 @@ export async function POST(req: NextRequest) {
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    const result = await pdfParse(buffer);
+    const name = file.name.toLowerCase();
 
-    return NextResponse.json({ text: result.text ?? '' });
+    let text = '';
+
+    if (name.endsWith('.pdf')) {
+      const result = await pdfParse(buffer);
+      text = result.text ?? '';
+    } else if (name.endsWith('.docx')) {
+      const result = await mammoth.extractRawText({ buffer });
+      text = result.value ?? '';
+    } else if (name.endsWith('.txt')) {
+      text = buffer.toString('utf-8');
+    }
+
+    return NextResponse.json({ text });
   } catch (error) {
-    console.error('[parse-resume] PDF parse error:', error);
+    console.error('[parse-resume] Parse error:', error);
     return NextResponse.json({ text: '' });
   }
 }
