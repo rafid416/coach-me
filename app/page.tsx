@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { countFillerWords } from '@/lib/fillerWords';
+import SetupScreen from '@/components/SetupScreen';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -197,7 +198,7 @@ export default function Home() {
       )}
 
       {(appState === 'setup' || appState === 'generating') && (
-        <SetupPlaceholder
+        <SetupScreen
           onStart={handleStart}
           isGenerating={appState === 'generating'}
           rateLimitResetAt={rateLimitResetAt}
