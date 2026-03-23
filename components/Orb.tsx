@@ -81,12 +81,14 @@ export default function Orb({ state, size = 'lg' }: OrbProps) {
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const dpr = window.devicePixelRatio || 1;
-    canvas.width = px * dpr;
-    canvas.height = px * dpr;
+    // 2× buffer so the outer glow fades to transparent before hitting the edge
+    canvas.width = px * 2 * dpr;
+    canvas.height = px * 2 * dpr;
     ctx.scale(dpr, dpr);
 
-    const cx = px / 2;
-    const cy = px / 2;
+    // Center lives at (px, px) in drawing coords → (px/2, px/2) in CSS pixels
+    const cx = px;
+    const cy = px;
     const r = px * 0.42;
     const colors = getColors(state);
     const numBolts = size === 'sm' ? 4 : 7;
@@ -213,7 +215,7 @@ export default function Orb({ state, size = 'lg' }: OrbProps) {
     <canvas
       ref={canvasRef}
       aria-hidden="true"
-      style={{ width: px, height: px, borderRadius: '50%', flexShrink: 0 }}
+      style={{ width: px, height: px, flexShrink: 0 }}
     />
   );
 }
