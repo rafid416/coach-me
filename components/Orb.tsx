@@ -11,7 +11,7 @@ interface OrbProps {
   size?: OrbSize;
 }
 
-const SIZE_PX: Record<OrbSize, number> = { sm: 80, lg: 160 };
+const SIZE_PX: Record<OrbSize, number> = { sm: 120, lg: 240 };
 
 interface Palette {
   primary: string;   // r,g,b
@@ -70,7 +70,7 @@ export default function Orb({ state, size = 'lg' }: OrbProps) {
     const r  = px * 0.40;
 
     const pal = getPalette(state);
-    const numRibbons = size === 'sm' ? 5 : 11;
+    const numRibbons = size === 'sm' ? 7 : 13;
 
     function getAmp(t: number): number {
       if (reduced) return 0.5;
