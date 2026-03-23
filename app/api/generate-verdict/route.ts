@@ -41,7 +41,12 @@ Return a JSON object in this exact format:
   });
 
   const content = completion.choices[0]?.message?.content ?? '{}';
-  const parsed = JSON.parse(content);
 
-  return NextResponse.json(parsed);
+  try {
+    const parsed = JSON.parse(content);
+    return NextResponse.json(parsed);
+  } catch {
+    console.error('[generate-verdict] Failed to parse JSON:', content);
+    return NextResponse.json({ error: 'Invalid response from model' }, { status: 500 });
+  }
 }

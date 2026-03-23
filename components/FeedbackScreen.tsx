@@ -57,6 +57,7 @@ export default function FeedbackScreen({
         setScores(data.scores ?? null);
         setFeedbackText(data.feedback ?? '');
       } catch {
+        setScores(null);
         setFeedbackText('Could not load feedback. Please continue.');
       } finally {
         setLoading(false);
@@ -118,7 +119,9 @@ export default function FeedbackScreen({
             {/* Reserved height container prevents layout shift */}
             <div className="min-h-[60px]">
               {feedbackText && (
-                <p className="text-[#8B92B8] text-sm leading-relaxed">{feedbackText}</p>
+                <p className={`text-sm leading-relaxed ${!scores ? 'text-[#F87171]' : 'text-[#8B92B8]'}`}>
+                  {feedbackText}
+                </p>
               )}
             </div>
           </>
@@ -127,7 +130,7 @@ export default function FeedbackScreen({
 
       <button
         disabled={loading}
-        onClick={() => scores && onNext(scores, feedbackText)}
+        onClick={() => onNext(scores ?? { clarity: 0, relevance: 0, star: 0, fillerWords: 0 }, feedbackText)}
         className="w-full py-3 rounded-xl bg-[#6C63FF] text-white font-semibold text-sm hover:bg-[#5a52e0] disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-2 focus:ring-[#6C63FF] focus:ring-offset-2 focus:ring-offset-[#0D0F1A]"
       >
         {isLastQuestion ? 'See Final Results →' : 'Next Question →'}

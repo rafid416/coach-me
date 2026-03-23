@@ -30,8 +30,13 @@ Return a JSON object in this exact format: { "questions": ["question 1", "questi
   });
 
   const content = completion.choices[0]?.message?.content ?? '{}';
-  const parsed = JSON.parse(content);
-  const questions: string[] = parsed.questions ?? [];
 
-  return NextResponse.json({ questions });
+  try {
+    const parsed = JSON.parse(content);
+    const questions: string[] = parsed.questions ?? [];
+    return NextResponse.json({ questions });
+  } catch {
+    console.error('[generate-questions] Failed to parse JSON:', content);
+    return NextResponse.json({ questions: [] }, { status: 500 });
+  }
 }

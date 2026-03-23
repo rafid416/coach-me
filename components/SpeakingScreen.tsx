@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import Orb from './Orb';
 import ProgressBar from './ProgressBar';
 
@@ -17,16 +17,19 @@ export default function SpeakingScreen({
   total,
   onDone,
 }: SpeakingScreenProps) {
+  const onDoneRef = useRef(onDone);
+  onDoneRef.current = onDone;
+
   useEffect(() => {
     const utterance = new SpeechSynthesisUtterance(question);
     utterance.lang = 'en-US';
-    utterance.onend = onDone;
+    utterance.onend = () => onDoneRef.current();
     window.speechSynthesis.speak(utterance);
 
     return () => {
       window.speechSynthesis.cancel();
     };
-  }, [question, onDone]);
+  }, [question]);
 
   return (
     <div className="flex flex-col items-center w-full max-w-[560px] px-4 gap-8">
