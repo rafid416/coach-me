@@ -11,7 +11,7 @@ interface OrbProps {
   size?: OrbSize;
 }
 
-const SIZE_PX: Record<OrbSize, number> = { sm: 160, lg: 560 };
+const SIZE_PX: Record<OrbSize, number> = { sm: 280, lg: 280 };
 
 interface Palette {
   primary: string;   // r,g,b
@@ -214,7 +214,7 @@ export default function Orb({ state, size = 'lg' }: OrbProps) {
     <canvas
       ref={canvasRef}
       aria-hidden="true"
-      style={{ width: px, height: px, flexShrink: 0 }}
+      style={{ width: px, height: px, maxWidth: '90vw', maxHeight: '90vw', flexShrink: 0 }}
     />
   );
 }
