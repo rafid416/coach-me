@@ -11,7 +11,7 @@ interface OrbProps {
   size?: OrbSize;
 }
 
-const SIZE_PX: Record<OrbSize, number> = { sm: 120, lg: 240 };
+const SIZE_PX: Record<OrbSize, number> = { sm: 150, lg: 320 };
 
 interface Palette {
   primary: string;   // r,g,b
