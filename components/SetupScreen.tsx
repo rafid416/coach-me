@@ -1,13 +1,16 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Upload, CheckCircle, X, AlertTriangle } from 'lucide-react';
 import Orb from './Orb';
+import VoiceSelector from './VoiceSelector';
+import { getVoicesAsync, loadSavedVoiceSlot, saveVoiceSlot, type ResolvedVoice } from '@/lib/voices';
 
 interface SessionConfig {
   role: string;
   interviewType: 'behavioural';
   resumeSummary: string;
+  voiceName: string;
 }
 
 interface SetupScreenProps {
@@ -27,7 +30,18 @@ export default function SetupScreen({
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [resumeSummary, setResumeSummary] = useState('');
   const [resumeStatus, setResumeStatus] = useState<'idle' | 'parsing' | 'done' | 'error'>('idle');
+  const [resolvedVoices, setResolvedVoices] = useState<ResolvedVoice[]>([]);
+  const [selectedVoiceName, setSelectedVoiceName] = useState<string>('Alex');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    getVoicesAsync().then((voices) => {
+      setResolvedVoices(voices);
+      const saved = loadSavedVoiceSlot();
+      const validSaved = saved && voices.some((v) => v.friendlyName === saved);
+      setSelectedVoiceName(validSaved ? saved! : voices[0]?.friendlyName ?? 'Alex');
+    });
+  }, []);
 
   const isDisabled = !role.trim() || isGenerating || !!rateLimitResetAt;
 
@@ -71,8 +85,13 @@ export default function SetupScreen({
     if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
+  function handleVoiceChange(friendlyName: string) {
+    setSelectedVoiceName(friendlyName);
+    saveVoiceSlot(friendlyName);
+  }
+
   function handleStart() {
-    onStart({ role: role.trim(), interviewType: 'behavioural', resumeSummary });
+    onStart({ role: role.trim(), interviewType: 'behavioural', resumeSummary, voiceName: selectedVoiceName });
   }
 
   return (
@@ -106,6 +125,15 @@ export default function SetupScreen({
           />
         </div>
 
+
+        {/* Voice Selector */}
+        {resolvedVoices.length > 0 && (
+          <VoiceSelector
+            voices={resolvedVoices}
+            selectedName={selectedVoiceName}
+            onChange={handleVoiceChange}
+          />
+        )}
 
         {/* Resume Upload */}
         <div>

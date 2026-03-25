@@ -22,6 +22,7 @@ interface SessionConfig {
   role: string;
   interviewType: 'behavioural';
   resumeSummary: string;
+  voiceName: string;
 }
 
 interface Scores {
@@ -224,6 +225,7 @@ export default function Home() {
           question={questions[currentQuestionIndex]}
           questionIndex={currentQuestionIndex}
           total={questions.length}
+          voiceName={sessionConfig?.voiceName ?? 'Alex'}
           onDone={() => { announce('Microphone is now active'); handleSpeakingDone(); }}
         />
       )}

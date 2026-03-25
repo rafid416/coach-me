@@ -3,11 +3,13 @@
 import { useEffect, useRef } from 'react';
 import Orb from './Orb';
 import ProgressBar from './ProgressBar';
+import { resolveVoices } from '@/lib/voices';
 
 interface SpeakingScreenProps {
   question: string;
   questionIndex: number;
   total: number;
+  voiceName: string;
   onDone: () => void;
 }
 
@@ -15,6 +17,7 @@ export default function SpeakingScreen({
   question,
   questionIndex,
   total,
+  voiceName,
   onDone,
 }: SpeakingScreenProps) {
   const onDoneRef = useRef(onDone);
@@ -23,13 +26,17 @@ export default function SpeakingScreen({
   useEffect(() => {
     const utterance = new SpeechSynthesisUtterance(question);
     utterance.lang = 'en-US';
+
+    const resolved = resolveVoices().find((v) => v.friendlyName === voiceName);
+    if (resolved?.voice) utterance.voice = resolved.voice;
+
     utterance.onend = () => onDoneRef.current();
     window.speechSynthesis.speak(utterance);
 
     return () => {
       window.speechSynthesis.cancel();
     };
-  }, [question]);
+  }, [question, voiceName]);
 
   return (
     <div className="flex flex-col items-center w-full max-w-[560px] px-4 gap-6 sm:gap-8">
