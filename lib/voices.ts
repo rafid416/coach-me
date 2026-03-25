@@ -34,15 +34,37 @@ const CURATED_VOICES: { friendlyName: string; descriptor: string; priorityNames:
 
 export function resolveVoices(): ResolvedVoice[] {
   const available = window.speechSynthesis.getVoices();
-  return CURATED_VOICES.map(({ friendlyName, descriptor, priorityNames }) => {
-    const matched =
-      priorityNames.reduce<SpeechSynthesisVoice | null>((found, name) => {
-        if (found) return found;
-        return available.find((v) => v.name.includes(name)) ?? null;
-      }, null) ?? available[0] ?? null;
 
-    return { friendlyName, descriptor, voice: matched };
-  });
+  // Step 1: find curated voices that actually matched a priority name
+  const matched: SpeechSynthesisVoice[] = [];
+  for (const { priorityNames } of CURATED_VOICES) {
+    const found = priorityNames.reduce<SpeechSynthesisVoice | null>((acc, name) => {
+      if (acc) return acc;
+      return available.find((v) => v.name.includes(name)) ?? null;
+    }, null);
+    if (found && !matched.includes(found)) matched.push(found);
+  }
+
+  // Step 2: if fewer than 3 matched, top up with English browser voices not already included
+  // Prioritise cloud-based voices (localService: false) over local ones
+  if (matched.length < 3) {
+    const remaining = available.filter(
+      (v) => v.lang.startsWith('en') && !matched.includes(v)
+    );
+    const cloud = remaining.filter((v) => !v.localService);
+    const local = remaining.filter((v) => v.localService);
+    for (const v of [...cloud, ...local]) {
+      if (matched.length >= 3) break;
+      matched.push(v);
+    }
+  }
+
+  // Step 3: label sequentially as Voice 1, Voice 2, etc.
+  return matched.map((voice, i) => ({
+    friendlyName: `Voice ${i + 1}`,
+    descriptor: '',
+    voice,
+  }));
 }
 
 export function getVoicesAsync(): Promise<ResolvedVoice[]> {

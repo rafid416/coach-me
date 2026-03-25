@@ -31,7 +31,7 @@ export default function SetupScreen({
   const [resumeSummary, setResumeSummary] = useState('');
   const [resumeStatus, setResumeStatus] = useState<'idle' | 'parsing' | 'done' | 'error'>('idle');
   const [resolvedVoices, setResolvedVoices] = useState<ResolvedVoice[]>([]);
-  const [selectedVoiceName, setSelectedVoiceName] = useState<string>('Ava');
+  const [selectedVoiceName, setSelectedVoiceName] = useState<string>('Voice 1');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {

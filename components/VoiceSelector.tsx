@@ -118,7 +118,7 @@ export default function VoiceSelector({ voices, selectedName, onChange }: VoiceS
                     )}
                   </span>
                   <span className="text-[#F0F2FF] text-sm font-medium">{voice.friendlyName}</span>
-                  <span className="text-[#8B92B8] text-xs truncate">{voice.descriptor}</span>
+                  {voice.descriptor && <span className="text-[#8B92B8] text-xs truncate">{voice.descriptor}</span>}
                 </span>
 
                 {!isDisabled && (
