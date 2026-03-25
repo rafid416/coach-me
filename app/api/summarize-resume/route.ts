@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
       {
         role: 'system',
         content:
-          'You are a resume parser. Summarize the following resume in 150-200 tokens. Focus on: current/most recent role, total years of experience, key technical and soft skills, and 1-2 notable projects or achievements. Be concise and factual.',
+          'You are a resume parser. Summarize the following resume in 150-200 tokens. If a professional summary section is present, use it as context but do not copy it verbatim. Focus on: the most recent role (title, company, key responsibilities), total years of experience, key technical and soft skills, and 1-2 notable achievements. Be concise and factual.',
       },
       {
         role: 'user',

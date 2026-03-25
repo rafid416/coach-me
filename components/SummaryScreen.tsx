@@ -5,10 +5,11 @@ import Orb from './Orb';
 import ScoreBar from './ScoreBar';
 
 interface Scores {
-  clarity: number;
-  relevance: number;
   star: number;
-  fillerWords: number;
+  relevance: number;
+  ownership: number;
+  conciseness: number;
+  confidence: number;
 }
 
 interface Answer {
@@ -19,7 +20,7 @@ interface Answer {
 }
 
 interface VerdictData {
-  verdict: 'Strong Offer' | 'On the Fence' | 'Not This Time';
+  verdict: 'Strong Offer' | 'Offer' | 'On the Fence' | 'Not This Time' | 'Hard Pass';
   rationale: string;
   tips: string[];
 }
@@ -30,18 +31,21 @@ interface SummaryScreenProps {
   onRestart: () => void;
 }
 
-const SCORE_KEYS: (keyof Scores)[] = ['clarity', 'relevance', 'star', 'fillerWords'];
+const SCORE_KEYS: (keyof Scores)[] = ['star', 'relevance', 'ownership', 'conciseness', 'confidence'];
 const SCORE_LABELS: Record<keyof Scores, string> = {
-  clarity: 'Clarity',
-  relevance: 'Relevance',
   star: 'STAR Structure',
-  fillerWords: 'Filler Words',
+  relevance: 'Relevance',
+  ownership: 'Ownership',
+  conciseness: 'Conciseness',
+  confidence: 'Confidence',
 };
 
 function getVerdictColor(verdict: string): string {
   if (verdict === 'Strong Offer') return '#4ADE80';
+  if (verdict === 'Offer') return '#86EFAC';
   if (verdict === 'On the Fence') return '#FBBF24';
-  return '#F87171';
+  if (verdict === 'Not This Time') return '#F87171';
+  return '#EF4444'; // Hard Pass
 }
 
 export default function SummaryScreen({ questions, answers, onRestart }: SummaryScreenProps) {
@@ -51,7 +55,7 @@ export default function SummaryScreen({ questions, answers, onRestart }: Summary
 
   // Compute overall score
   const allValues = answers.flatMap((a) => SCORE_KEYS.map((k) => a.scores[k]));
-  const overall = Math.round((allValues.reduce((s, v) => s + v, 0) / (4 * answers.length)) * 10);
+  const overall = Math.round((allValues.reduce((s, v) => s + v, 0) / (5 * answers.length)) * 10);
 
   // Compute averaged scores per dimension
   const avgScores = SCORE_KEYS.map((key) => ({
@@ -74,6 +78,7 @@ export default function SummaryScreen({ questions, answers, onRestart }: Summary
             questions,
             answers: answers.map((a) => a.transcript),
             scores: answers.map((a) => a.scores),
+            overallScore: overall,
           }),
         });
         const data = await res.json();
@@ -84,7 +89,7 @@ export default function SummaryScreen({ questions, answers, onRestart }: Summary
       } catch {
         // Fallback verdict if API fails
         const fallback: VerdictData = {
-          verdict: overall >= 75 ? 'Strong Offer' : overall >= 50 ? 'On the Fence' : 'Not This Time',
+          verdict: overall >= 85 ? 'Strong Offer' : overall >= 70 ? 'Offer' : overall >= 50 ? 'On the Fence' : overall >= 25 ? 'Not This Time' : 'Hard Pass',
           rationale: 'Your session has been completed. Keep practising to improve your scores.',
           tips: ['Work on structuring answers using the STAR format.', 'Reduce filler words by pausing instead of filling silence.'],
         };

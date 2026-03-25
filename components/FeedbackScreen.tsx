@@ -6,32 +6,34 @@ import ProgressBar from './ProgressBar';
 import ScoreBar from './ScoreBar';
 
 interface Scores {
-  clarity: number;
-  relevance: number;
   star: number;
-  fillerWords: number;
+  relevance: number;
+  ownership: number;
+  conciseness: number;
+  confidence: number;
 }
 
 interface FeedbackScreenProps {
   question: string;
   transcript: string;
-  fillerCount: number;
+  resumeSummary: string;
   questionIndex: number;
   total: number;
   onNext: (scores: Scores, feedbackText: string) => void;
 }
 
 const SCORE_LABELS: Record<keyof Scores, string> = {
-  clarity: 'Clarity',
-  relevance: 'Relevance',
   star: 'STAR Structure',
-  fillerWords: 'Filler Words',
+  relevance: 'Relevance',
+  ownership: 'Ownership',
+  conciseness: 'Conciseness',
+  confidence: 'Confidence',
 };
 
 export default function FeedbackScreen({
   question,
   transcript,
-  fillerCount,
+  resumeSummary,
   questionIndex,
   total,
   onNext,
@@ -51,7 +53,7 @@ export default function FeedbackScreen({
         const res = await fetch('/api/generate-feedback', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ question, answer: transcript, fillerCount }),
+          body: JSON.stringify({ question, answer: transcript, resumeSummary }),
         });
 
         if (!res.body) throw new Error('No response body');
@@ -95,7 +97,7 @@ export default function FeedbackScreen({
     }
 
     fetchFeedback();
-  }, [question, transcript, fillerCount]);
+  }, [question, transcript, resumeSummary]);
 
   const isLastQuestion = questionIndex + 1 === total;
   const truncated = transcript.length > 100;
@@ -160,7 +162,7 @@ export default function FeedbackScreen({
 
       <button
         disabled={loading}
-        onClick={() => onNext(scores ?? { clarity: 0, relevance: 0, star: 0, fillerWords: 0 }, feedbackText)}
+        onClick={() => onNext(scores ?? { star: 0, relevance: 0, ownership: 0, conciseness: 0, confidence: 0 }, feedbackText)}
         className="w-full py-3 rounded-xl bg-[#6C63FF] text-white font-semibold text-sm hover:bg-[#5a52e0] disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-2 focus:ring-[#6C63FF] focus:ring-offset-2 focus:ring-offset-[#0D0F1A]"
       >
         {isLastQuestion ? 'See Final Results →' : 'Next Question →'}

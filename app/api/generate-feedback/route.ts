@@ -7,7 +7,11 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const DELIMITER = '---';
 
 export async function POST(req: NextRequest) {
-  const { question, answer, fillerCount } = await req.json();
+  const { question, answer, resumeSummary } = await req.json();
+
+  const levelNote = resumeSummary
+    ? `Resume summary: ${resumeSummary}`
+    : 'No resume provided — evaluate at mid-level standard (2–5 years experience).';
 
   const stream = await groq.chat.completions.create({
     model: 'llama-3.3-70b-versatile',
@@ -17,18 +21,46 @@ export async function POST(req: NextRequest) {
         role: 'system',
         content: `You are an expert interview coach evaluating a candidate's behavioural interview answer.
 
+First, determine the candidate's experience level from the resume summary:
+- Entry-level: 0–2 years experience or student/graduate
+- Mid-level: 2–5 years experience
+- Senior: 5+ years experience
+
+${levelNote}
+
 Respond in exactly two parts:
 
 PART 1 — Output a single JSON object on one line with no extra whitespace:
-{"clarity":<0-10>,"relevance":<0-10>,"star":<0-10>,"fillerWords":<0-10>}
+{"star":<0-10>,"relevance":<0-10>,"ownership":<0-10>,"conciseness":<0-10>,"confidence":<0-10>}
 
 PART 2 — Output the delimiter ${DELIMITER} on its own line, then 2–4 sentences of specific, actionable plain-text feedback.
 
-Scoring guide:
-- clarity: How clearly and concisely they communicated
-- relevance: How well the answer addressed the specific question
-- star: How well they structured using STAR (Situation, Task, Action, Result)
-- fillerWords: ${fillerCount} filler words used — 0 fillers=10, 1–2=8, 3–5=6, 6–9=4, 10+=2
+Scoring rubric (apply stricter standards for higher experience levels):
+
+- star (STAR Structure):
+  Entry: 8–10=clear Situation/Task/Action/Result with some outcome; 5–7=partial structure or vague result; 0–4=no recognisable structure
+  Mid: 8–10=full STAR with specific result; 5–7=missing one element or result is vague; 0–4=poor or no structure
+  Senior: 8–10=full STAR with quantified/measurable result; 5–7=result present but not quantified; 0–4=missing structure or result
+
+- relevance (Answers the question):
+  Entry: 8–10=directly addresses the question; 5–7=mostly on topic with minor tangents; 0–4=misses the question
+  Mid: 8–10=precise and fully on topic; 5–7=partially relevant; 0–4=does not answer the question
+  Senior: 8–10=precise, no tangents, addresses nuance of the question; 5–7=mostly relevant; 0–4=off topic
+
+- ownership (Personal accountability):
+  Entry: 8–10=uses "I" clearly for own actions; 5–7=mix of "I" and "we"; 0–4=mostly "we" or passive voice
+  Mid: 8–10=strong "I did X, I decided Y" throughout; 5–7=some vague team attribution; 0–4=hides behind team
+  Senior: 8–10=clear personal ownership with leadership context; 5–7=some shared credit without clarity; 0–4=deflects to team
+
+- conciseness (Focused, no rambling):
+  Entry: 8–10=clear and on point; 5–7=some unnecessary detail; 0–4=significantly off track
+  Mid: 8–10=tight and efficient; 5–7=some padding; 0–4=rambling or repetitive
+  Senior: 8–10=precise with no filler; 5–7=minor padding; 0–4=unfocused or over-explained
+
+- confidence (Assertive language):
+  Entry: 8–10=mostly assertive; 5–7=some hedging ("I think", "maybe"); 0–4=frequent uncertainty
+  Mid: 8–10=decisive and direct; 5–7=occasional hedging; 0–4=frequent hedging or self-doubt
+  Senior: 8–10=fully assertive, no hedging; 5–7=minor softening; 0–4=hedging undermines credibility
 
 Output nothing else. No preamble before the JSON.`,
       },

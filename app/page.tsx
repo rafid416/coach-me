@@ -25,10 +25,11 @@ interface SessionConfig {
 }
 
 interface Scores {
-  clarity: number;
-  relevance: number;
   star: number;
-  fillerWords: number;
+  relevance: number;
+  ownership: number;
+  conciseness: number;
+  confidence: number;
 }
 
 interface Answer {
@@ -49,6 +50,7 @@ function formatResetTime(isoString: string): string {
 
 export default function Home() {
   const [appState, setAppState] = useState<AppState>('setup');
+  const [sessionConfig, setSessionConfig] = useState<SessionConfig | null>(null);
   const [questions, setQuestions] = useState<string[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Answer[]>([]);
@@ -104,6 +106,7 @@ export default function Home() {
     }
 
     setRateLimitResetAt(null);
+    setSessionConfig(config);
     setAppState('generating');
 
     try {
@@ -140,7 +143,7 @@ export default function Home() {
     const partial: Answer = {
       transcript,
       fillerCount,
-      scores: { clarity: 0, relevance: 0, star: 0, fillerWords: 0 },
+      scores: { star: 0, relevance: 0, ownership: 0, conciseness: 0, confidence: 0 },
       feedbackText: '',
     };
     setAnswers((prev) => [...prev, partial]);
@@ -238,7 +241,7 @@ export default function Home() {
         <FeedbackScreen
           question={questions[currentQuestionIndex]}
           transcript={answers[currentQuestionIndex].transcript}
-          fillerCount={answers[currentQuestionIndex].fillerCount}
+          resumeSummary={sessionConfig?.resumeSummary ?? ''}
           questionIndex={currentQuestionIndex}
           total={questions.length}
           onNext={handleFeedbackNext}

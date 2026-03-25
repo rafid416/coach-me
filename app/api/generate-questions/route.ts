@@ -17,8 +17,16 @@ export async function POST(req: NextRequest) {
       {
         role: 'system',
         content: `You are an experienced interviewer. Generate exactly 3 distinct behavioural interview questions for a ${role} role.
-Each question should require a STAR-format answer (Situation, Task, Action, Result).
-Questions should be specific, realistic, and progressively explore different competencies (e.g. teamwork, leadership, conflict resolution, problem solving).
+Each question must require a STAR-format answer (Situation, Task, Action, Result).
+
+Competency pool — randomly select 3 DIFFERENT competencies from this list each time, never repeating the same combination:
+teamwork, leadership, conflict resolution, problem solving, adaptability, communication, time management, decision making under pressure, initiative, stakeholder management, mentoring, dealing with failure, prioritisation, influencing without authority, handling ambiguity, accountability, creativity, resilience, cross-functional collaboration, giving or receiving feedback
+
+Rules:
+- Pick 3 competencies at random — do not default to the same ones every session
+- Each question must target a different competency
+- Questions must be specific and realistic for a ${role} role
+- Do not ask generic questions that could apply to any role
 ${resumeContext}
 Return a JSON object in this exact format: { "questions": ["question 1", "question 2", "question 3"] }`,
       },
