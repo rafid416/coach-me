@@ -12,7 +12,28 @@ interface AnsweringScreenProps {
   onAnswerDone: (transcript: string, fillerCount: number) => void;
 }
 
-type SpeechRecognitionType = typeof window extends { SpeechRecognition: infer T } ? T : never;
+interface ISpeechRecognitionResult {
+  readonly isFinal: boolean;
+  readonly [index: number]: { transcript: string };
+}
+interface ISpeechRecognitionEvent extends Event {
+  readonly resultIndex: number;
+  readonly results: { length: number; [index: number]: ISpeechRecognitionResult };
+}
+interface ISpeechRecognitionErrorEvent extends Event {
+  readonly error: string;
+}
+interface ISpeechRecognition extends EventTarget {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  onresult: ((e: ISpeechRecognitionEvent) => void) | null;
+  onend: (() => void) | null;
+  onerror: ((e: ISpeechRecognitionErrorEvent) => void) | null;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+}
 
 export default function AnsweringScreen({
   question,
@@ -26,9 +47,7 @@ export default function AnsweringScreen({
   const [textInput, setTextInput] = useState('');
   const [error, setError] = useState('');
   const [showTimeout, setShowTimeout] = useState(false);
-  const [isStopped, setIsStopped] = useState(false);
-
-  const recognitionRef = useRef<InstanceType<SpeechRecognitionType> | null>(null);
+  const recognitionRef = useRef<ISpeechRecognition | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isStoppedRef = useRef(false);
 
@@ -39,29 +58,23 @@ export default function AnsweringScreen({
   }
 
   function startRecognition() {
-    const SR =
-      (window as Window & { SpeechRecognition?: SpeechRecognitionType; webkitSpeechRecognition?: SpeechRecognitionType }).SpeechRecognition ||
-      (window as Window & { SpeechRecognition?: SpeechRecognitionType; webkitSpeechRecognition?: SpeechRecognitionType }).webkitSpeechRecognition;
+    const SR = (window as unknown as { SpeechRecognition?: new () => ISpeechRecognition; webkitSpeechRecognition?: new () => ISpeechRecognition }).SpeechRecognition
+      || (window as unknown as { webkitSpeechRecognition?: new () => ISpeechRecognition }).webkitSpeechRecognition;
 
     if (!SR) return;
 
-    const recognition = new SR() as InstanceType<SpeechRecognitionType> & {
-      lang: string;
-      continuous: boolean;
-      interimResults: boolean;
-      onresult: ((e: SpeechRecognitionEvent) => void) | null;
-      onend: (() => void) | null;
-      onerror: ((e: SpeechRecognitionErrorEvent) => void) | null;
-      start: () => void;
-      stop: () => void;
-      abort: () => void;
-    };
+    // Abort any existing instance before creating a new one
+    recognitionRef.current?.abort();
+
+    const recognition = new SR();
+    let alive = true;
 
     recognition.lang = 'en-US';
-    recognition.continuous = false;
+    recognition.continuous = true;
     recognition.interimResults = true;
 
-    recognition.onresult = (e: SpeechRecognitionEvent) => {
+    recognition.onresult = (e: ISpeechRecognitionEvent) => {
+      if (!alive) return;
       resetSilenceTimer();
       let interim = '';
       let final = '';
@@ -78,14 +91,19 @@ export default function AnsweringScreen({
     };
 
     recognition.onend = () => {
+      if (!alive || isStoppedRef.current) return;
       setInterimTranscript('');
-      // Restart unless manually stopped
-      if (!isStoppedRef.current) {
-        try { recognition.start(); } catch { /* already started */ }
-      }
+      // With continuous: true this should rarely fire, but restart just in case
+      setTimeout(() => {
+        if (alive && !isStoppedRef.current) {
+          try { recognition.start(); } catch { /* already started */ }
+        }
+      }, 300);
     };
 
-    recognition.onerror = (e: SpeechRecognitionErrorEvent) => {
+    recognition.onerror = (e: ISpeechRecognitionErrorEvent) => {
+      if (!alive) return;
+      console.log('[SpeechRecognition] error:', e.error);
       if (e.error !== 'aborted' && e.error !== 'no-speech') {
         setError('Microphone error — please check your mic and try again.');
       }
@@ -95,13 +113,15 @@ export default function AnsweringScreen({
     isStoppedRef.current = false;
     recognition.start();
     resetSilenceTimer();
+
+    return () => { alive = false; };
   }
 
   useEffect(() => {
-    if (!textMode) {
-      startRecognition();
-    }
+    if (textMode) return;
+    const cleanup = startRecognition();
     return () => {
+      cleanup?.();
       isStoppedRef.current = true;
       recognitionRef.current?.abort();
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -142,8 +162,6 @@ export default function AnsweringScreen({
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setTextMode(true);
   }
-
-  const activeTranscript = textMode ? textInput : finalTranscript;
 
   return (
     <div className="flex flex-col items-center w-full max-w-[560px] px-4 gap-6">
