@@ -31,7 +31,7 @@ export default function SetupScreen({
   const [resumeSummary, setResumeSummary] = useState('');
   const [resumeStatus, setResumeStatus] = useState<'idle' | 'parsing' | 'done' | 'error'>('idle');
   const [resolvedVoices, setResolvedVoices] = useState<ResolvedVoice[]>([]);
-  const [selectedVoiceName, setSelectedVoiceName] = useState<string>('Alex');
+  const [selectedVoiceName, setSelectedVoiceName] = useState<string>('Ava');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -95,14 +95,25 @@ export default function SetupScreen({
   }
 
   return (
-    <div className="flex flex-col items-center w-full max-w-[560px] px-4">
+    <div className="flex flex-col items-center w-full max-w-[560px] px-4 gap-3">
       {/* Wordmark */}
-      <p className="text-[#8B92B8] text-sm font-medium tracking-widest uppercase mb-6">CoachMe</p>
+      <p className="text-[#8B92B8] text-sm font-medium tracking-widest uppercase mb-3">CoachMe</p>
 
       {/* Orb */}
-      <div className="mb-8">
+      <div className="mb-5">
         <Orb state="idle" size="sm" />
       </div>
+
+      {/* Voice Selector */}
+      {resolvedVoices.length > 0 && (
+        <div className="w-full">
+          <VoiceSelector
+            voices={resolvedVoices}
+            selectedName={selectedVoiceName}
+            onChange={handleVoiceChange}
+          />
+        </div>
+      )}
 
       {/* Card */}
       <div className="w-full bg-[#161926] rounded-2xl border border-white/[0.06] p-4 sm:p-6 space-y-4 sm:space-y-5">
@@ -124,16 +135,6 @@ export default function SetupScreen({
             className="w-full bg-[#1E2235] border border-white/10 rounded-xl px-4 py-3 text-[#F0F2FF] placeholder:text-[#8B92B8] text-sm outline-none focus:border-[#6C63FF] transition-colors"
           />
         </div>
-
-
-        {/* Voice Selector */}
-        {resolvedVoices.length > 0 && (
-          <VoiceSelector
-            voices={resolvedVoices}
-            selectedName={selectedVoiceName}
-            onChange={handleVoiceChange}
-          />
-        )}
 
         {/* Resume Upload */}
         <div>

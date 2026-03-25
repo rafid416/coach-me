@@ -6,19 +6,29 @@ export interface ResolvedVoice {
 
 const CURATED_VOICES: { friendlyName: string; descriptor: string; priorityNames: string[] }[] = [
   {
-    friendlyName: 'Alex',
-    descriptor: 'Clear · American · Male',
-    priorityNames: ['Google US English', 'Microsoft David', 'Alex'],
+    friendlyName: 'Ava',
+    descriptor: 'Clear · American · Female',
+    priorityNames: ['Google US English', 'Microsoft Zira'],
   },
   {
     friendlyName: 'Samira',
     descriptor: 'Warm · British · Female',
-    priorityNames: ['Google UK English Female', 'Microsoft Hazel', 'Karen'],
+    priorityNames: ['Google UK English Female', 'Microsoft Hazel'],
   },
   {
-    friendlyName: 'Daniel',
-    descriptor: 'Crisp · Australian · Male',
-    priorityNames: ['Google Australian English', 'Microsoft James', 'Daniel'],
+    friendlyName: 'James',
+    descriptor: 'Crisp · British · Male',
+    priorityNames: ['Google UK English Male', 'Microsoft George'],
+  },
+  {
+    friendlyName: 'Richard',
+    descriptor: 'Friendly · Canadian · Male',
+    priorityNames: ['Microsoft Richard'],
+  },
+  {
+    friendlyName: 'Linda',
+    descriptor: 'Warm · Canadian · Female',
+    priorityNames: ['Microsoft Linda'],
   },
 ];
 
