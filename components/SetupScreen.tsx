@@ -98,7 +98,7 @@ export default function SetupScreen({
     <div className="flex flex-col items-center w-full max-w-[560px] px-4 gap-3">
       {/* Logo */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/orbwithtext.png" alt="CoachMe" className="h-10 w-auto mb-3" />
+      <img src="/orbwithtext.png" alt="Coachly" className="h-10 w-auto mb-3" />
 
 
       {/* Orb */}

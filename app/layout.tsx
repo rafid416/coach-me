@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "CoachMe — AI Interview Practice",
+  title: "Coachly — AI Interview Practice",
   description: "Practice behavioural interviews with an AI coach that speaks, listens, and scores your answers.",
 };
 

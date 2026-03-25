@@ -200,7 +200,7 @@ export default function Home() {
 
       {appState === 'gate' && (
         <div className="text-center max-w-md px-6">
-          <h1 className="text-2xl font-semibold text-[#F0F2FF] mb-3">CoachMe works best in Chrome or Edge</h1>
+          <h1 className="text-2xl font-semibold text-[#F0F2FF] mb-3">Coachly works best in Chrome or Edge</h1>
           <p className="text-[#8B92B8] mb-6 text-sm">Voice features require the Web Speech API, supported in Chrome and Edge.</p>
           <button
             onClick={() => setAppState('setup')}
