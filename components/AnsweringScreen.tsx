@@ -70,7 +70,7 @@ export default function AnsweringScreen({
     let alive = true;
 
     recognition.lang = 'en-US';
-    recognition.continuous = true;
+    recognition.continuous = false; // false is more compatible across mobile browsers
     recognition.interimResults = true;
 
     recognition.onresult = (e: ISpeechRecognitionEvent) => {
@@ -78,6 +78,7 @@ export default function AnsweringScreen({
       resetSilenceTimer();
       let interim = '';
       let final = '';
+      // Always iterate from e.resultIndex to avoid reprocessing old results
       for (let i = e.resultIndex; i < e.results.length; i++) {
         const text = e.results[i][0].transcript;
         if (e.results[i].isFinal) {
@@ -86,19 +87,18 @@ export default function AnsweringScreen({
           interim += text;
         }
       }
-      if (final) setFinalTranscript((prev) => prev + final);
+      if (final) setFinalTranscript((prev) => prev ? prev + ' ' + final.trim() : final.trim());
       setInterimTranscript(interim);
     };
 
     recognition.onend = () => {
       if (!alive || isStoppedRef.current) return;
-      alive = false; // prevent this instance from handling any more events
+      alive = false;
       setInterimTranscript('');
-      // Create a fresh instance on restart — reusing the same instance causes
-      // Samsung browser to replay buffered results, producing duplicates
+      // Always create a fresh instance — never reuse, prevents Samsung replaying buffered results
       setTimeout(() => {
         if (!isStoppedRef.current) startRecognition();
-      }, 300);
+      }, 150);
     };
 
     recognition.onerror = (e: ISpeechRecognitionErrorEvent) => {
