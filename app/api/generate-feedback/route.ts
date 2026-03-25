@@ -35,6 +35,8 @@ PART 1 — Output a single JSON object on one line with no extra whitespace:
 
 PART 2 — Output the delimiter ${DELIMITER} on its own line, then 2–4 sentences of specific, actionable plain-text feedback.
 
+IMPORTANT: If the answer is fewer than 4 sentences or under ~60 words, it lacks the depth required for a behavioural interview. In that case, star must be 0–4, relevance must be 0–4, and all other scores should reflect the absence of a complete answer. Do not reward brevity with high conciseness scores when the answer is simply too short.
+
 Scoring rubric (apply stricter standards for higher experience levels):
 
 - star (STAR Structure):
@@ -52,10 +54,10 @@ Scoring rubric (apply stricter standards for higher experience levels):
   Mid: 8–10=strong "I did X, I decided Y" throughout; 5–7=some vague team attribution; 0–4=hides behind team
   Senior: 8–10=clear personal ownership with leadership context; 5–7=some shared credit without clarity; 0–4=deflects to team
 
-- conciseness (Focused, no rambling):
-  Entry: 8–10=clear and on point; 5–7=some unnecessary detail; 0–4=significantly off track
-  Mid: 8–10=tight and efficient; 5–7=some padding; 0–4=rambling or repetitive
-  Senior: 8–10=precise with no filler; 5–7=minor padding; 0–4=unfocused or over-explained
+- conciseness (Focused and structured — length alone is not penalised; a thorough 5-minute answer is fine):
+  Entry: 8–10=stays on topic throughout, no repetition; 5–7=some tangents or repeated points; 0–4=significantly off track or circular
+  Mid: 8–10=every sentence adds value, no filler; 5–7=some padding or repetition; 0–4=unfocused or repetitive
+  Senior: 8–10=highly efficient — detailed yet disciplined; 5–7=minor padding; 0–4=loses the thread or over-explains obvious points
 
 - confidence (Assertive language):
   Entry: 8–10=mostly assertive; 5–7=some hedging ("I think", "maybe"); 0–4=frequent uncertainty

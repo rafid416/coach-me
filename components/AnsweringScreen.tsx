@@ -92,12 +92,12 @@ export default function AnsweringScreen({
 
     recognition.onend = () => {
       if (!alive || isStoppedRef.current) return;
+      alive = false; // prevent this instance from handling any more events
       setInterimTranscript('');
-      // With continuous: true this should rarely fire, but restart just in case
+      // Create a fresh instance on restart — reusing the same instance causes
+      // Samsung browser to replay buffered results, producing duplicates
       setTimeout(() => {
-        if (alive && !isStoppedRef.current) {
-          try { recognition.start(); } catch { /* already started */ }
-        }
+        if (!isStoppedRef.current) startRecognition();
       }, 300);
     };
 
