@@ -96,8 +96,10 @@ export default function SetupScreen({
 
   return (
     <div className="flex flex-col items-center w-full max-w-[560px] px-4 gap-3">
-      {/* Wordmark */}
-      <p className="text-[#8B92B8] text-sm font-medium tracking-widest uppercase mb-3">CoachMe</p>
+      {/* Logo */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/orbwithtext.png" alt="CoachMe" className="h-10 w-auto mb-3" />
+
 
       {/* Orb */}
       <div className="mb-5">
